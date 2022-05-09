@@ -3,7 +3,7 @@
 # Initial stage which pulls prepares build dependencies and CLI tooling we need for our final image
 # Also used as the image in CI jobs so needs all dependencies
 ####################################################################################################
-FROM golang:1.13.4 as builder
+FROM golang:1.18.1 as builder
 
 ARG IMAGE_OS=linux
 
@@ -46,7 +46,8 @@ RUN if [ "${IMAGE_OS}" = "linux" ]; then \
 # argoexec-base
 # Used as the base for both the release and development version of argoexec
 ####################################################################################################
-FROM debian:10.3-slim as argoexec-base
+#FROM debian:10.3-slim as argoexec-base
+FROM klstg-docker.slb-wartifactory-v.stg.rmn.local/rakuten/rflow/rflow-ubuntu:20.04 as argoexec-base
 
 ARG IMAGE_OS=linux
 
@@ -146,3 +147,5 @@ COPY --from=argo-build --chown=8737 /go/src/github.com/argoproj/argo/argo-server
 COPY --from=argo-build --chown=8737 /go/src/github.com/argoproj/argo/argo-server.key argo-server.key
 COPY --from=argo-build /go/src/github.com/argoproj/argo/dist/argo-${IMAGE_OS}-* /bin/argo
 ENTRYPOINT [ "argo" ]
+
+COPY NOTICES /NOTICES
